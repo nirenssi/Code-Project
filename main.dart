@@ -4,106 +4,150 @@ void main() {
   runApp(const MyApp());
 }
 
+// Root StatelessWidget
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) 
-  {
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Niren App',
-      home: MyHomePage(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget
-{
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String text = "";
-
-  void changeText(String text) {
-    this.setState(() {
-      this.text = text;
-    });
-  }
+// First screen - StatelessWidget
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Hello World!')),
-      body: Column(children: <Widget>[
-        TextInputWiget(this.changeText),
-        Text(this.text)
-      ]));
+      appBar: AppBar(
+        title: const Text('Hello World!'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome to My Flutter App',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'This app demonstrates Flutter UI widgets.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MessageScreen(),
+                  ),
+                );
+              },
+              child: const Text('Open Message Screen'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-class TextInputWiget extends StatefulWidget {
-  final Function(String) callback;
-
-  TextInputWiget(this.callback);
+// Second screen - StatelessWidget
+class MessageScreen extends StatelessWidget {
+  const MessageScreen({super.key});
 
   @override
-  _TextInputWigetState createState() => _TextInputWigetState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Message Screen'),
+      ),
+      body: const MessageInput(),
+    );
+  }
 }
 
-class _TextInputWigetState extends State<TextInputWiget> {
-  final controller = TextEditingController();
+// StatefulWidget for dynamic message interaction
+class MessageInput extends StatefulWidget {
+  const MessageInput({super.key});
 
   @override
-  void dispose() {
-    super.dispose();
-    controller.dispose();
-  }
+  State<MessageInput> createState() => _MessageInputState();
+}
 
-  void click() {
-    widget.callback(controller.text);
+class _MessageInputState extends State<MessageInput> {
+  final TextEditingController controller = TextEditingController();
+
+  String message = '';
+
+  void sendMessage() {
+    setState(() {
+      message = controller.text;
+    });
+
     controller.clear();
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: this.controller,
-      decoration: InputDecoration(
-        prefixIcon: Icon(Icons.message),
-        labelText: "Type a message:",
-        suffixIcon: IconButton(
-          icon: Icon(Icons.send),
-          splashColor: Colors.blue,
-          tooltip: "Post message",
-          onPressed: this.click,
-        )));
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          // Row places the input field and button next to each other.
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.message),
+                    labelText: 'Type a message:',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              IconButton(
+                icon: const Icon(Icons.send),
+                tooltip: 'Send message',
+                onPressed: sendMessage,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 30),
+
+          // Displays the dynamically updated message.
+          Text(
+            message,
+            style: const TextStyle(
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
